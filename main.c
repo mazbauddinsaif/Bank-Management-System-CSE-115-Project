@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-// #include <ctype.h>
+#include <stdlib.h> //system("cls") ,  exit()
 #include <time.h>
-// #include <conio.h>
 #define MAX_USERS 50
 
 // All structures
@@ -24,9 +22,9 @@ typedef struct
     char time[30];
 } transaction;
 
-// All Functions List
+// All Functions List:
 
-// functions for easy shortcut
+// functions for file handling
 int writeUsers(user users[], int userCount, char filename[]);
 int readUsers(user users[], char filename[]);
 int readStatements(transaction user[], char filename[]);
@@ -34,7 +32,7 @@ int readStatements(transaction user[], char filename[]);
 // function of main menu
 void mainMenu();
 
-// function for admin
+// functions for admin
 void adminLogin();
 void adminView();
 void viewAllUsers();
@@ -52,66 +50,10 @@ void showUserBalance(user editedUser[], int numUsers, int userIndex);
 void showUserDetails(user editedUser[], int numUsers, int userIndex);
 void resetUserPassword(user editedUser[], int numUsers, int userIndex);
 
-
 int main()
 {
     mainMenu();
     return 0;
-}
-
-int readStatements(transaction user[], char filename[])
-{
-    FILE *fp = fopen(filename, "r");
-
-    int userCount = 0;
-    char type[20];
-
-    while (userCount < MAX_USERS && fscanf(fp, "%99s %f %f %29[^\n]",
-                                           user[userCount].name, &user[userCount].deposit, &user[userCount].withdraw, user[userCount].time) == 4)
-    {
-
-        userCount++;
-    }
-
-    fclose(fp);
-    return userCount;
-}
-
-int readUsers(user users[], char filename[])
-{
-    FILE *fp = fopen(filename, "r");
-
-    int userCount = 0;
-
-    while (userCount < MAX_USERS && fscanf(fp, " Account holder name - %99[^\n]", users[userCount].name) == 1)
-    {
-        fscanf(fp, " Password - %24[^\n]", users[userCount].password);
-
-        fscanf(fp, " Date of birth - %10[^\n]", users[userCount].DOB);
-
-        fscanf(fp, " Balance - %f", &users[userCount].balance);
-
-        userCount++;
-    }
-
-    fclose(fp);
-    return userCount;
-}
-
-int writeUsers(user users[], int userCount, char filename[])
-{
-    FILE *fp = fopen(filename, "w");
-
-    for (int i = 0; i < userCount; i++)
-    {
-        fprintf(fp, "Account holder name - %s\n", users[i].name);
-        fprintf(fp, "Password - %s\n", users[i].password);
-        fprintf(fp, "Date of birth - %s\n", users[i].DOB);
-        fprintf(fp, "Balance - %.2f\n\n", users[i].balance);
-    }
-
-    fclose(fp);
-    return userCount;
 }
 
 void mainMenu()
@@ -125,8 +67,8 @@ void mainMenu()
         printf("\tBANK MANAGEMENT SYSTEM\n");
         printf("------------------------------------\n");
         printf("\t1.Admin Login\n");
-        printf("\t2.User Login\n");
-        printf("\t3.New User Registration\n");
+        printf("\t2.New User Registration\n");
+        printf("\t3.User Login\n");
         printf("\t4.Exit\n");
 
         printf("\n\tEnter your choice:");
@@ -138,18 +80,270 @@ void mainMenu()
             adminLogin();
             break;
         case 2:
-            userLogin();
+            userRegister();
             break;
         case 3:
-            userRegister();
+            userLogin();
             break;
         case 4:
             system("cls");
             return;
+            break;
         default:
             printf("Wrong input! Press enter to try again.");
             getchar();
+            continue;
+        }
+    }
+}
+
+void adminLogin()
+{
+    system("cls");
+    char name[25], pass[25];
+    printf("---------------------------\n");
+    printf("\tADMIN LOGIN\n");
+    printf("---------------------------\n");
+    printf("\n\tEnter Admin Username: ");
+    gets(name);
+    printf("\n\tEnter Password: ");
+    gets(pass);
+    if (strcmp(name, "admin") == 0 && strcmp(pass, "admin") == 0)
+    {
+        adminView();
+    }
+    else
+    {
+        printf("\nWrong credentials! Press enter to try again.\n");
+        getchar();
+        adminLogin();
+    }
+}
+
+void adminView()
+
+{
+    int choice;
+
+    while (1)
+    {
+        system("cls");
+        printf("--------------------------------------\n");
+        printf("\tWELCOME TO ADMIN PANEL\n");
+        printf("--------------------------------------\n");
+        printf("\t1.View All Users\n");
+        printf("\t2.View User Details\n");
+        printf("\t3.View All Transactions\n");
+        printf("\t4.Search Bank Statements\n");
+        printf("\t5.Delete user\n");
+        printf("\t6.Logout\n");
+
+        printf("\n\tEnter your choice:");
+        scanf("%d", &choice);
+        getchar();
+
+        switch (choice)
+        {
+        case 1:
+            viewAllUsers();
+            break;
+        case 2:
+            viewUserDetails();
+            break;
+        case 3:
+            transactionHistory();
+            break;
+        case 4:
+            searchBankStatements();
+            break;
+        case 5:
+            deleteUser();
+            break;
+
+        case 6:
+            printf("\nLogging out...\n");
+            return;
+
+        default:
+            printf("Wrong input! Press enter to try again.");
+            getchar();
+            continue;
+        }
+    }
+}
+
+void viewAllUsers()
+{
+    system("cls");
+    user users[MAX_USERS];
+    int numUsers = readUsers(users, "users.txt");
+
+    printf("List of all users:\n");
+    for (int i = 0; i < numUsers; i++)
+    {
+        printf("User %d: %s\n", i + 1, users[i].name);
+    }
+    printf("\nPress enter to go back to admin menu.\n");
+    getchar();
+}
+
+void viewUserDetails()
+{
+    system("cls");
+    user users[MAX_USERS];
+    int numUsers = readUsers(users, "users.txt");
+
+    char name[100];
+    printf("Enter the name of the user to view details: ");
+    gets(name);
+
+    for (int i = 0; i < numUsers; i++)
+    {
+        if (strcmp(users[i].name, name) == 0)
+        {
+            printf("Account Holder Name: %s\n", users[i].name);
+            printf("Date of Birth: %s\n", users[i].DOB);
+            printf("Current Balance: %.2f\n", users[i].balance);
+            printf("\nPress enter to go back to admin menu.\n");
+            getchar();
+            return;
+        }
+    }
+
+    int login_choice = 0;
+    printf("User not found!\n");
+    printf("1.Try again.\n");
+    printf("2.Admin menu.\n");
+    scanf("%d", &login_choice);
+    getchar();
+    switch (login_choice)
+    {
+    case 1:
+        viewUserDetails();
+        break;
+    case 2:
+        adminView();
+    }
+}
+
+void transactionHistory()
+{
+    system("cls");
+    transaction trans[MAX_USERS];
+    int numTrans = readStatements(trans, "transaction_history.txt");
+
+    float totalDeposit = 0, totalWithdraw = 0;
+
+    printf("-------------------------------------------------------------------------------\n");
+    printf("S.No   %-20s %-10s %-10s %-25s\n", "Name", "Deposit", "Withdraw", "Time");
+    printf("-------------------------------------------------------------------------------\n");
+
+    for (int i = 0; i < numTrans; i++)
+    {
+        printf("%-6d %-20s %-10.2f %-10.2f %-25s\n",
+               i + 1, trans[i].name, trans[i].deposit, trans[i].withdraw, trans[i].time);
+        totalDeposit += trans[i].deposit;
+        totalWithdraw += trans[i].withdraw;
+    }
+
+    printf("-------------------------------------------------------------------------------\n");
+    printf("TOTAL  %-20s %-10.2f %-10.2f\n", "", totalDeposit, totalWithdraw);
+    printf("-------------------------------------------------------------------------------\n");
+
+    printf("\nPress enter to go back to previous menu.\n");
+    getchar();
+}
+
+void searchBankStatements()
+{
+    system("cls");
+    transaction trans[MAX_USERS];
+    int numTrans = readStatements(trans, "transaction_history.txt");
+
+    char name[100];
+    printf("Enter the name of the user to view statement: ");
+    gets(name);
+
+    float totalDeposit = 0, totalWithdraw = 0;
+    int found = 0;
+
+    printf("-------------------------------------------------------------------------------\n");
+    printf("S.No   %-20s %-10s %-10s %-25s\n", "Name", "Deposit", "Withdraw", "Time");
+    printf("-------------------------------------------------------------------------------\n");
+
+    for (int i = 0; i < numTrans; i++)
+    {
+        if (strcmp(trans[i].name, name) == 0)
+        {
+            found = 1;
+            printf("%-6d %-20s %-10.2f %-10.2f %-25s\n",
+                   i + 1, trans[i].name, trans[i].deposit, trans[i].withdraw, trans[i].time);
+            totalDeposit += trans[i].deposit;
+            totalWithdraw += trans[i].withdraw;
+        }
+    }
+
+    if (found)
+    {
+        printf("-------------------------------------------------------------------------------\n");
+        printf("TOTAL  %-20s %-10.2f %-10.2f\n", "", totalDeposit, totalWithdraw);
+        printf("-------------------------------------------------------------------------------\n");
+    }
+    else
+    {
+        printf("\nNo transactions found for user '%s'.\n", name);
+    }
+
+    printf("\nPress enter to go back to admin menu.\n");
+    getchar();
+}
+
+void deleteUser()
+{
+    system("cls");
+    user users[MAX_USERS];
+    int numUsers = readUsers(users, "users.txt");
+
+    char name[100];
+    printf("Enter the name of the user to delete: ");
+    gets(name);
+
+    int found = 0;
+    for (int i = 0; i < numUsers; i++)
+    {
+        if (strcmp(users[i].name, name) == 0)
+        {
+            found = 1;
+            for (int j = i; j < numUsers - 1; j++)
+            {
+                users[j] = users[j + 1];
+            }
+            numUsers--;
+            break;
+        }
+    }
+
+    if (found)
+    {
+        writeUsers(users, numUsers, "users.txt");
+        printf("User deleted successfully! Press enter to go back to admin menu.\n");
+    }
+    else
+    {
+        int login_choice = 0;
+        printf("User not found!\n");
+        printf("1.Try again.\n");
+        printf("2.Admin menu.\n");
+        scanf("%d", &login_choice);
+        getchar();
+        switch (login_choice)
+        {
+        case 1:
+            deleteUser();
+            break;
+        case 2:
             mainMenu();
+            break;
         }
     }
 }
@@ -159,19 +353,18 @@ void userRegister()
     system("cls");
     user newUser;
     user users[MAX_USERS];
-    int numUsers = readUsers(users, "users.txt");  
+    int numUsers = readUsers(users, "users.txt");
 
     printf("Enter your name: ");
     gets(newUser.name);
 
-  
     for (int i = 0; i < numUsers; i++)
     {
         if (strcmp(users[i].name, newUser.name) == 0)
         {
             printf("\nThis username is already registered! Please choose another name.\n");
             getchar();
-            userRegister();  
+            userRegister();
             return;
         }
     }
@@ -182,7 +375,6 @@ void userRegister()
     printf("Enter date of birth (dd-mm-yyyy): ");
     gets(newUser.DOB);
 
-   
     FILE *fp = fopen("users.txt", "a");
     fprintf(fp, "Account holder name - %s\nPassword - %s\nDate of birth - %s\nBalance - %.2f\n\n",
             newUser.name, newUser.password, newUser.DOB, newUser.balance);
@@ -192,7 +384,6 @@ void userRegister()
     getchar();
     return;
 }
-
 
 void userLogin()
 {
@@ -258,8 +449,8 @@ void userLogin()
                 resetUserPassword(editedUser, numUsers, userIndex);
                 break;
             case 6:
-                mainMenu();
-                break;
+                printf("\nLogging out...\n");
+                return;
             default:
                 printf("Wrong input! Press enter to try again.");
                 getchar();
@@ -282,6 +473,7 @@ void userLogin()
             break;
         case 2:
             mainMenu();
+            break;
         }
     }
 }
@@ -301,12 +493,15 @@ void deposit(user editedUser[], int numUsers, int userIndex)
     printf("Enter amount to deposit: ");
     scanf("%f", &amount);
     getchar();
+
     editedUser[userIndex].balance += amount;
+
     printf("Deposit successful! New balance: %.2f\n", editedUser[userIndex].balance);
     writeUsers(editedUser, numUsers, "users.txt");
     printf("\nPress enter to go back to previous menu.\n");
 
     fp = fopen("transaction_history.txt", "a");
+
     fprintf(fp, "%-20s\t%-10.2f\t%-10.2f\t%s\n", editedUser[userIndex].name, amount, 0.0, currentTimeInString);
     fclose(fp);
     getchar();
@@ -331,7 +526,22 @@ void withdraw(user editedUser[], int numUsers, int userIndex)
         getchar();
         if (editedUser[userIndex].balance < amount)
         {
+            int login_choice = 0;
             printf("Withdraw insuccessful! Current balance: %.2f\n", editedUser[userIndex].balance);
+            printf("1.Try again.\n");
+            printf("2.Main menu.\n");
+            scanf("%d", &login_choice);
+            getchar();
+            switch (login_choice)
+            {
+            case 1:
+                system("cls");
+                continue;
+                break;
+            case 2:
+                mainMenu();
+                break;
+            }
         }
     } while (editedUser[userIndex].balance < amount);
 
@@ -368,7 +578,6 @@ void resetUserPassword(user editedUser[], int numUsers, int userIndex)
 {
     system("cls");
     char newPassword[25];
-    fflush(stdin);
     printf("Enter new password: ");
     gets(newPassword);
     strcpy(editedUser[userIndex].password, newPassword);
@@ -377,230 +586,60 @@ void resetUserPassword(user editedUser[], int numUsers, int userIndex)
     getchar();
 }
 
-void adminLogin()
+int readUsers(user users[], char filename[])
 {
-    system("cls");
-    char name[25], pass[25];
-    printf("------------------------------\n");
-    printf("\tADMIN LOGIN\n");
-    printf("------------------------------\n");
-    printf("\n\tEnter Admin Username: ");
-    gets(name);
-    fflush(stdin);
-    printf("\n\tEnter Password: ");
-    gets(pass);
-    if (strcmp(name, "admin") == 0 && strcmp(pass, "admin") == 0)
+    FILE *fp = fopen(filename, "r");
+
+    int userCount = 0;
+
+    while (userCount < MAX_USERS && fscanf(fp, " Account holder name - %99[^\n]", users[userCount].name) == 1)
     {
-        adminView();
+        fscanf(fp, " Password - %24[^\n]", users[userCount].password);
+
+        fscanf(fp, " Date of birth - %10[^\n]", users[userCount].DOB);
+
+        fscanf(fp, " Balance - %f", &users[userCount].balance);
+
+        userCount++;
     }
-    else
-    {
-        printf("\nWrong credentials! Press enter to try again.\n");
-        getchar();
-        adminLogin();
-    }
+
+    fclose(fp);
+    return userCount;
 }
 
-void adminView()
-
+int writeUsers(user users[], int userCount, char filename[])
 {
-    int choice;
+    FILE *fp = fopen(filename, "w");
 
-    while (1)
+    for (int i = 0; i < userCount; i++)
     {
-        system("cls");
-        printf("------------------------------\n");
-        printf("\tWELCOME TO ADMIN PANEL\n");
-        printf("------------------------------\n");
-        printf("\t1.View All Users\n");
-        printf("\t2.View User Details\n");
-        printf("\t3.View All Transactions\n");
-        printf("\t4.Search Bank Statements\n");
-        printf("\t5.Delete user\n");
-        printf("\t6.Logout\n");
-
-        printf("\n\tEnter your choice:");
-        scanf("%d", &choice);
-        getchar();
-
-        switch (choice)
-        {
-        case 1:
-            viewAllUsers();
-            break;
-        case 2:
-            viewUserDetails();
-            break;
-        case 3:
-            transactionHistory();
-            break;
-        case 4:
-            searchBankStatements();
-            break;
-        case 5:
-            deleteUser();
-            break;
-
-        case 6:
-            printf("\nLogging out...\n");
-            return;
-
-        default:
-            printf("Wrong input! Press enter to try again.");
-            getchar();
-            adminView();
-        }
+        fprintf(fp, "Account holder name - %s\n", users[i].name);
+        fprintf(fp, "Password - %s\n", users[i].password);
+        fprintf(fp, "Date of birth - %s\n", users[i].DOB);
+        fprintf(fp, "Balance - %.2f\n\n", users[i].balance);
     }
+
+    fclose(fp);
+    return userCount;
 }
 
-void viewAllUsers()
+int readStatements(transaction user[], char filename[])
 {
-    system("cls");
-    user users[MAX_USERS];
-    int numUsers = readUsers(users, "users.txt");
+    FILE *fp = fopen(filename, "r");
 
-    printf("List of all users:\n");
-    for (int i = 0; i < numUsers; i++)
+    int userCount = 0;
+    char type[20];
+
+    while (userCount < MAX_USERS && fscanf(fp, "%99s %f %f %29[^\n]",
+                                           user[userCount].name, &user[userCount].deposit, &user[userCount].withdraw, user[userCount].time) == 4)
     {
-        printf("User %d: %s\n", i + 1, users[i].name);
-    }
-    printf("\nPress enter to go back to admin menu.\n");
-    getchar();
-}
 
-void viewUserDetails()
-{
-    system("cls");
-    user users[MAX_USERS];
-    int numUsers = readUsers(users, "users.txt");
-
-    char name[100];
-    printf("Enter the name of the user to view details: ");
-    gets(name);
-
-    for (int i = 0; i < numUsers; i++)
-    {
-        if (strcmp(users[i].name, name) == 0)
-        {
-            printf("Account Holder Name: %s\n", users[i].name);
-            printf("Date of Birth: %s\n", users[i].DOB);
-            printf("Current Balance: %.2f\n", users[i].balance);
-            printf("\nPress enter to go back to admin menu.\n");
-            getchar();
-            return;
-        }
-    }
-    printf("User not found! Press enter to try again.\n");
-    getchar();
-    viewUserDetails();
-}
-
-void transactionHistory()
-{
-    system("cls");
-    transaction trans[MAX_USERS];
-    int numTrans = readStatements(trans, "transaction_history.txt");
-
-    float totalDeposit = 0, totalWithdraw = 0;
-
-    printf("---------------------------------------------------------------------\n");
-    printf("S.No   %-20s %-10s %-10s %-25s\n", "Name", "Deposit", "Withdraw", "Time");
-    printf("---------------------------------------------------------------------\n");
-
-    for (int i = 0; i < numTrans; i++)
-    {
-        printf("%-6d %-20s %-10.2f %-10.2f %-25s\n",
-               i + 1, trans[i].name, trans[i].deposit, trans[i].withdraw, trans[i].time);
-        totalDeposit += trans[i].deposit;
-        totalWithdraw += trans[i].withdraw;
+        userCount++;
     }
 
-    printf("---------------------------------------------------------------------\n");
-    printf("TOTAL  %-20s %-10.2f %-10.2f\n", "", totalDeposit, totalWithdraw);
-    printf("---------------------------------------------------------------------\n");
-
-    printf("\nPress enter to go back to previous menu.\n");
-    getchar();
+    fclose(fp);
+    return userCount;
 }
 
 
-void searchBankStatements()
-{
-    system("cls");
-    transaction trans[MAX_USERS];
-    int numTrans = readStatements(trans, "transaction_history.txt");
-
-    char name[100];
-    printf("Enter the name of the user to view statement: ");
-    gets(name);
-
-    float totalDeposit = 0, totalWithdraw = 0;
-    int found = 0;
-
-    printf("---------------------------------------------------------------------\n");
-    printf("S.No   %-20s %-10s %-10s %-25s\n", "Name", "Deposit", "Withdraw", "Time");
-    printf("---------------------------------------------------------------------\n");
-
-    for (int i = 0; i < numTrans; i++)
-    {
-        if (strcmp(trans[i].name, name) == 0)
-        {
-            found = 1;
-            printf("%-6d %-20s %-10.2f %-10.2f %-25s\n",
-                   i + 1, trans[i].name, trans[i].deposit, trans[i].withdraw, trans[i].time);
-            totalDeposit += trans[i].deposit;
-            totalWithdraw += trans[i].withdraw;
-        }
-    }
-
-    if (found)
-    {
-        printf("---------------------------------------------------------------------\n");
-        printf("TOTAL  %-20s %-10.2f %-10.2f\n", "", totalDeposit, totalWithdraw);
-        printf("---------------------------------------------------------------------\n");
-    }
-    else
-    {
-        printf("\nNo transactions found for user '%s'.\n", name);
-    }
-
-    printf("\nPress enter to go back to admin menu.\n");
-    getchar();
-}
-
-void deleteUser()
-{
-    system("cls");
-    user users[MAX_USERS];
-    int numUsers = readUsers(users, "users.txt");
-
-    char name[100];
-    printf("Enter the name of the user to delete: ");
-    gets(name);
-
-    int found = 0;
-    for (int i = 0; i < numUsers; i++)
-    {
-        if (strcmp(users[i].name, name) == 0)
-        {
-            found = 1;
-            for (int j = i; j < numUsers - 1; j++)
-            {
-                users[j] = users[j + 1];
-            }
-            numUsers--;
-            break;
-        }
-    }
-
-    if (found)
-    {
-        writeUsers(users, numUsers, "users.txt");
-        printf("User deleted successfully! Press enter to go back to admin menu.\n");
-    }
-    else
-    {
-        printf("User not found! Press enter to try again.\n");
-    }
-    getchar();
-}
+// THE END OF CSE 115 L PROJECT LED by MAZBA UDDIN SAIF, AJWAD ABRAR & SAGOR IFRAN
