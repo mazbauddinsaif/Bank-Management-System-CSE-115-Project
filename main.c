@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h> //system("cls") 
+#include <stdlib.h> //system("cls")
+#include <time.h>
 #define MAX_USERS 50
 
 // All structures
@@ -502,7 +503,10 @@ void deposit(user editedUser[], int numUsers, int userIndex)
 
     fp = fopen("transaction_history.txt", "a");
 
-    fprintf(fp, "%-20s\t%-10.2f\t%-10.2f\t%s\n", editedUser[userIndex].name, amount, 0.0, currentTimeInString);
+    fprintf(fp, "Account holder name - %s\n", editedUser[userIndex].name);
+    fprintf(fp, "Deposit - %.2f\n", amount);
+    fprintf(fp, "Withdraw - %.2f\n", 0.00);
+    fprintf(fp, "Time - %s\n\n", currentTimeInString);
     fclose(fp);
     getchar();
 }
@@ -551,7 +555,10 @@ void withdraw(user editedUser[], int numUsers, int userIndex)
     printf("\nPress enter to go back to previous menu.\n");
 
     fp = fopen("transaction_history.txt", "a");
-    fprintf(fp, "%-20s\t%-10.2f\t%-10.2f\t%s\n", editedUser[userIndex].name, 0.0, amount, currentTimeInString);
+    fprintf(fp, "Account holder name - %s\n", editedUser[userIndex].name);
+    fprintf(fp, "Deposit - %.2f\n", 0.00);
+    fprintf(fp, "Withdraw - %.2f\n", amount);
+    fprintf(fp, "Time - %s\n\n", currentTimeInString);
     fclose(fp);
     getchar();
 }
@@ -628,11 +635,14 @@ int readStatements(transaction user[], char filename[])
     FILE *fp = fopen(filename, "r");
 
     int userCount = 0;
-    char type[20];
 
-    while (userCount < MAX_USERS && fscanf(fp, "%99s %f %f %29[^\n]",
-                                           user[userCount].name, &user[userCount].deposit, &user[userCount].withdraw, user[userCount].time) == 4)
+    while (userCount < MAX_USERS && fscanf(fp, " Account holder name - %99[^\n]", user[userCount].name) == 1)
     {
+        fscanf(fp, " Deposit - %f", &user[userCount].deposit);
+
+        fscanf(fp, " Withdraw - %f", &user[userCount].withdraw);
+
+        fscanf(fp, " Time - %29[^\n]", user[userCount].time);
 
         userCount++;
     }
