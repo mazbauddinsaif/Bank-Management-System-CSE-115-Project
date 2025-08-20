@@ -1,0 +1,30 @@
+Account holder name - Zobaer Ahammod Zamil
+Password - Zamil123
+Date of birth - 01-01-2000
+Balance - 100000.00
+
+Account holder name - Fowzia Farzana
+Password - Fowzia123
+Date of birth - 01-01-2000
+Balance - 100000.00
+
+Account holder name - Ajwad Abrar
+Password - 1234
+Date of birth - 19-05-2006
+Balance - 1449345.00
+
+Account holder name - Mazba Uddin Saif
+Password - 1234
+Date of birth - 16-03-2005
+Balance - 54400.00
+
+Account holder name - Sagor Ifran
+Password - 1234
+Date of birth - 10-10-2000
+Balance - 0.00
+
+Account holder name - Bill Gates
+Password - 1
+Date of birth - 01-01-1950
+Balance - 0.00
+
