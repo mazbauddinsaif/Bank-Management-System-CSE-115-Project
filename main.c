@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h> //system("cls") ,  exit()
-#include <time.h>
+#include <stdlib.h> //system("cls") 
 #define MAX_USERS 50
 
 // All structures
@@ -222,7 +221,7 @@ void viewUserDetails()
         viewUserDetails();
         break;
     case 2:
-        adminView();
+        return;
     }
 }
 
@@ -291,6 +290,7 @@ void searchBankStatements()
     }
     else
     {
+        system("cls");
         printf("\nNo transactions found for user '%s'.\n", name);
     }
 
@@ -342,7 +342,7 @@ void deleteUser()
             deleteUser();
             break;
         case 2:
-            mainMenu();
+            return;
             break;
         }
     }
@@ -472,7 +472,7 @@ void userLogin()
             userLogin();
             break;
         case 2:
-            mainMenu();
+            return;
             break;
         }
     }
@@ -529,7 +529,7 @@ void withdraw(user editedUser[], int numUsers, int userIndex)
             int login_choice = 0;
             printf("Withdraw insuccessful! Current balance: %.2f\n", editedUser[userIndex].balance);
             printf("1.Try again.\n");
-            printf("2.Main menu.\n");
+            printf("2.Previous menu.\n");
             scanf("%d", &login_choice);
             getchar();
             switch (login_choice)
@@ -539,7 +539,7 @@ void withdraw(user editedUser[], int numUsers, int userIndex)
                 continue;
                 break;
             case 2:
-                mainMenu();
+                return;
                 break;
             }
         }
@@ -640,6 +640,5 @@ int readStatements(transaction user[], char filename[])
     fclose(fp);
     return userCount;
 }
-
 
 // THE END OF CSE 115 L PROJECT LED by MAZBA UDDIN SAIF, AJWAD ABRAR & SAGOR IFRAN
